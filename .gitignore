@@ -1,0 +1,86 @@
+# --- Dependencies ---
+# These directories contain all the project dependencies. They can be very
+# large and are easily recreated by running `npm install` or `yarn install`.
+*/node_modules
+*/client/node_modules
+*/server/node_modules
+
+# Yarn PnP files
+.pnp.js
+.pnp.cjs
+
+# --- Environment Variables ---
+# Never commit sensitive information like API keys, database credentials, etc.
+# These files typically store such secrets.
+# Always commit a template file (e.g., .env.example) to show what variables are needed.
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Allow the example file to be committed
+!/.env.example
+!/client/.env.example
+!/server/.env.example
+
+# --- Build & Production Output ---
+# These folders contain the compiled and optimized output of your application.
+# They are generated during the build process and should not be versioned.
+/build
+/client/build
+/dist
+/out
+/.next
+
+# --- Logs ---
+# Log files are generated during runtime and are specific to a single session
+# or environment. They don't belong in the repository.
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Testing & Coverage ---
+# Test reports and coverage analysis are generated when running tests.
+/coverage
+.nyc_output
+
+# --- IDEs & Editor Configuration ---
+# User-specific settings for code editors should not be shared.
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# --- Operating System Generated Files ---
+# These files are metadata created by your operating system and are not
+# part of the project's source code.
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+.Trashes
+.Spotlight-V100
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# --- Miscellaneous ---
+# Other temporary files or local configurations.
+.npm/
+.yarn/
+*.pem
+*.swp
+
+# Optional: If you use local MongoDB dumps for testing
+/dump
+/mongod.lock
