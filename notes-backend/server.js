@@ -1,41 +1,32 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
 
-const authRoutes = require("./routes/auth");
-const notesRoutes = require("./routes/notes");
-const tenantsRoutes = require("./routes/tenants");
+import authRoutes from "./routes/auth.js";
+import notesRoutes from "./routes/notes.js";
+import tenantRoutes from "./routes/tenants.js";
+
+dotenv.config();
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
-app.get("/health", (req, res) => res.json({ status: "ok" }));
-
+// Routes
 app.use("/auth", authRoutes);
 app.use("/notes", notesRoutes);
-app.use("/tenants", tenantsRoutes);
+app.use("/tenants", tenantRoutes);
 
-const PORT = process.env.PORT || 4000;
-
-async function start() {
-  if (!process.env.MONGODB_URI) {
-    console.error("MONGODB_URI not set in env");
-    process.exit(1);
-  }
-  await mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  console.log("Connected to MongoDB");
-
-  app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-  });
-}
-
-start().catch((err) => {
-  console.error("Failed to start server", err);
-  process.exit(1);
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
 });
+
+// DB + Server
+const PORT = process.env.PORT || 4000;
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
+  })
+  .catch((err) => console.error(err));

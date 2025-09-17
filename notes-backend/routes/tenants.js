@@ -1,28 +1,47 @@
-const express = require("express");
+import express from "express";
+import Tenant from "../models/Tenant.js";
+import { authMiddleware } from "../middleware/auth.js";
+import { requireRole } from "../middleware/role.js";
+
 const router = express.Router();
-const auth = require("../middleware/auth");
-const requireAdmin = require("../middleware/requireAdmin");
-const Tenant = require("../models/Tenant");
-const User = require("../models/User");
 
-// Upgrade endpoint - POST /tenants/:slug/upgrade (admin only)
-router.post("/:slug/upgrade", auth, requireAdmin, async (req, res) => {
-  try {
-    const { slug } = req.params;
-    const tenant = await Tenant.findOne({ slug });
-    if (!tenant) return res.status(404).json({ error: "tenant not found" });
+// Upgrade plan
+router.post(
+  "/:slug/upgrade",
+  authMiddleware,
+  requireRole("ADMIN"),
+  async (req, res) => {
+    const tenant = await Tenant.findOne({ slug: req.params.slug });
+    if (!tenant) return res.status(404).json({ error: "Tenant not found" });
 
-    // ensure admin belongs to same tenant
-    if (req.user.tenantId.toString() !== tenant._id.toString())
-      return res.status(403).json({ error: "not allowed" });
-
-    tenant.plan = "pro";
+    tenant.plan = "PRO";
     await tenant.save();
-    res.json({ ok: true, plan: "pro" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "server error" });
+    res.json({
+      message: "Upgraded to Pro",
+      tenant: { slug: tenant.slug, plan: tenant.plan.toLowerCase() },
+    });
   }
-});
+);
+router.post(
+  "/invite",
+  authMiddleware,
+  requireRole("admin"),
+  async (req, res) => {
+    const { email, role } = req.body;
+    const tenant = req.user.tenant;
+    console.log(tenant);
+    const hashed = await bcrypt.hash("password", 10);
+    const newUser = await User.create({
+      email,
+      password: hashed,
+      role: role.toUpperCase(),
+      tenant: tenant._id,
+    });
 
-module.exports = router;
+    res.json({
+      message: "User invited",
+      user: { email: newUser.email, role: newUser.role.toLowerCase() },
+    });
+  }
+);
+export default router;

@@ -1,9 +1,9 @@
 # --- Dependencies ---
 # These directories contain all the project dependencies. They can be very
 # large and are easily recreated by running `npm install` or `yarn install`.
-*/node_modules
-*/client/node_modules
-*/server/node_modules
+/node_modules
+/client/node_modules
+/server/node_modules
 
 # Yarn PnP files
 .pnp.js

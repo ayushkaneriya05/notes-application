@@ -1,88 +1,67 @@
-const express = require("express");
+import express from "express";
+import Note from "../models/Note.js";
+import { authMiddleware } from "../middleware/auth.js";
+
 const router = express.Router();
-const auth = require("../middleware/auth");
-const Tenant = require("../models/Tenant");
-const Note = require("../models/Note");
 
-// Create a note
-router.post("/", auth, async (req, res) => {
-  try {
-    const tenantId = req.user.tenantId;
-    const tenant = await Tenant.findById(tenantId);
-    if (!tenant) return res.status(404).json({ error: "tenant not found" });
+// Create
+router.post("/", authMiddleware, async (req, res) => {
+  const { title, content } = req.body;
+  const tenant = req.user.tenant;
 
-    if (tenant.plan === "free") {
-      const count = await Note.countDocuments({ tenantId });
-      if (count >= 3)
-        return res.status(403).json({ error: "Free plan note limit reached" });
-    }
-
-    const { title, content } = req.body;
-    if (!title) return res.status(400).json({ error: "title required" });
-
-    const note = await Note.create({
-      title,
-      content: content || "",
-      tenantId,
-      ownerId: req.user.id,
-    });
-    res.status(201).json(note);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "server error" });
+  if (tenant.plan === "FREE") {
+    const count = await Note.countDocuments({ tenant: tenant._id });
+    if (count >= 3)
+      return res
+        .status(403)
+        .json({ error: "Note limit reached. Upgrade to Pro." });
   }
+
+  const note = await Note.create({
+    title,
+    content,
+    tenant: tenant._id,
+    createdBy: req.user._id,
+  });
+
+  res.json(note);
 });
 
-// List notes
-router.get("/", auth, async (req, res) => {
-  try {
-    const tenantId = req.user.tenantId;
-    const notes = await Note.find({ tenantId }).sort({ updatedAt: -1 });
-    res.json(notes);
-  } catch (err) {
-    res.status(500).json({ error: "server error" });
-  }
+// Read all
+router.get("/", authMiddleware, async (req, res) => {
+  const notes = await Note.find({ tenant: req.user.tenant._id });
+  res.json(notes);
 });
 
-// Get note by id
-router.get("/:id", auth, async (req, res) => {
-  try {
-    const tenantId = req.user.tenantId;
-    const note = await Note.findOne({ _id: req.params.id, tenantId });
-    if (!note) return res.status(404).json({ error: "note not found" });
-    res.json(note);
-  } catch (err) {
-    res.status(500).json({ error: "server error" });
-  }
+// Read one
+router.get("/:id", authMiddleware, async (req, res) => {
+  const note = await Note.findOne({
+    _id: req.params.id,
+    tenant: req.user.tenant._id,
+  });
+  if (!note) return res.status(404).json({ error: "Not found" });
+  res.json(note);
 });
 
-// Update note
-router.put("/:id", auth, async (req, res) => {
-  try {
-    const tenantId = req.user.tenantId;
-    const { title, content } = req.body;
-    const note = await Note.findOneAndUpdate(
-      { _id: req.params.id, tenantId },
-      { $set: { title, content, updatedAt: Date.now() } },
-      { new: true }
-    );
-    if (!note) return res.status(404).json({ error: "note not found" });
-    res.json(note);
-  } catch (err) {
-    res.status(500).json({ error: "server error" });
-  }
+// Update
+router.put("/:id", authMiddleware, async (req, res) => {
+  const note = await Note.findOneAndUpdate(
+    { _id: req.params.id, tenant: req.user.tenant._id },
+    req.body,
+    { new: true }
+  );
+  if (!note) return res.status(404).json({ error: "Not found" });
+  res.json(note);
 });
 
-/// Delete note
-router.delete("/:id", auth, async (req, res) => {
-  try {
-    const tenantId = req.user.tenantId;
-    const note = await Note.findOneAndDelete({ _id: req.params.id, tenantId });
-    if (!note) return res.status(404).json({ error: "note not found" });
-    res.json({ ok: true });
-  } catch (err) {
-    res.status(500).json({ error: "server error" });
-  }
+// Delete
+router.delete("/:id", authMiddleware, async (req, res) => {
+  const note = await Note.findOneAndDelete({
+    _id: req.params.id,
+    tenant: req.user.tenant._id,
+  });
+  if (!note) return res.status(404).json({ error: "Not found" });
+  res.json({ message: "Deleted" });
 });
 
-module.exports = router;
+export default router;

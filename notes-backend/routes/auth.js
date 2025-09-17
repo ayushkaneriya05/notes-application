@@ -1,30 +1,39 @@
-const express = require("express");
-const router = express.Router();
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const User = require("../models/User");
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
+import Tenant from "../models/Tenant.js";
+import { authMiddleware } from "../middleware/auth.js";
+import { requireRole } from "../middleware/role.js";
 
-// POST /auth/login
+const router = express.Router();
+
+// Login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).json({ error: "email and password required" });
+  const user = await User.findOne({ email }).populate("tenant");
+  if (!user) return res.status(400).json({ error: "Invalid credentials" });
 
-  const user = await User.findOne({ email }).populate("tenantId");
-  if (!user) return res.status(401).json({ error: "invalid credentials" });
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return res.status(400).json({ error: "Invalid credentials" });
 
-  const ok = await bcrypt.compare(password, user.passwordHash);
-  if (!ok) return res.status(401).json({ error: "invalid credentials" });
-
-  const payload = {
-    sub: user._id.toString(),
-    tid: user.tenantId._id.toString(),
-    role: user.role,
-  };
-  const token = jwt.sign(payload, process.env.JWT_SECRET || "dev_secret", {
-    expiresIn: "8h",
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
   });
-  res.json({ token });
+
+  res.json({
+    token,
+    user: {
+      id: user._id,
+      email: user.email,
+      role: user.role.toLowerCase(), // normalize for frontend
+      tenant: {
+        slug: user.tenant.slug,
+        name: user.tenant.name,
+        plan: user.tenant.plan.toLowerCase(),
+      },
+    },
+  });
 });
 
-module.exports = router;
+export default router;
