@@ -46,16 +46,9 @@ app.get("/health", (req, res) => {
 });
 
 // Connect to DB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB connected");
-  })
-  .catch((err) => console.error("❌ DB Connection failed", err));
+import { connectDB } from "./config/db.js";
+connectDB();
 
-// --- Environment-Specific Logic ---
-
-// If NOT running on Vercel, start a local server.
 if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 4000;
   app.listen(PORT, () => {
@@ -65,5 +58,4 @@ if (!process.env.VERCEL) {
   });
 }
 
-// Export the app for Vercel's serverless environment.
 export default app;
