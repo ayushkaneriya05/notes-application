@@ -23,7 +23,7 @@ This repository demonstrates **multi-tenancy, authentication & authorization, te
 - [Backend Routes](#-backend-routes)
 - [Seeded Tenants & Test Accounts](#-seeded-tenants--test-accounts)
 - [Frontend Structure](#-frontend-structure)
-- [Local Setup](#-local-setup)
+- [Local Setup](#local-setup)
 - [API Endpoints Reference](#-api-endpoints-reference)
 - [Security & Hardening](#-security--hardening)
 - [Contact](#-contact)
