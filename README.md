@@ -135,7 +135,7 @@ MONGO_URI="your-mongo-uri" JWT_SECRET="a-secret" node seed.js
 
 ---
 
-## 🎨 Frontend Structure
+## Frontend Structure 🎨
 
 Located in `notes-frontend/src/`:
 
@@ -153,7 +153,7 @@ Located in `notes-frontend/src/`:
 
 ---
 
-## ⚙️ Local Setup
+## Local Setup ⚙️
 
 ### Backend
 
