@@ -1,49 +1,61 @@
-import React, { useState } from "react";
-import { Trash2, Edit, Check } from "lucide-react";
+import React from "react";
 
-export default function NotesCard({ note, onDelete, onUpdate }) {
-  const [editing, setEditing] = useState(false);
-  const [content, setContent] = useState(note.content || "");
+function objectIdTimestamp(id) {
+  if (!id || typeof id !== "string" || id.length < 8) return null;
+  try {
+    const ts = parseInt(id.substring(0, 8), 16) * 1000;
+    return new Date(ts);
+  } catch (e) {
+    return null;
+  }
+}
 
-  const handleSave = () => {
-    onUpdate(note._id, { title: note.title || "Note", content });
-    setEditing(false);
-  };
+function fmtDate(note) {
+  const d = note.createdAt || note.updatedAt;
+  if (d) {
+    try {
+      return new Date(d).toLocaleString();
+    } catch (e) {}
+  }
+  const oidDate = objectIdTimestamp(note._id);
+  if (oidDate) return oidDate.toLocaleString();
+  return "-";
+}
+
+function formatCreator(createdBy) {
+  if (!createdBy) return "-";
+  if (typeof createdBy === "string") return createdBy;
+  if (createdBy.name) return createdBy.name;
+  if (createdBy.email) return createdBy.email;
+  if (createdBy._id) return String(createdBy._id);
+  return JSON.stringify(createdBy);
+}
+
+export default function NotesCard({ note, onOpen }) {
+  const title = note.title || "Untitled";
+  const createdAt = fmtDate(note);
+  const createdBy = formatCreator(note.createdBy);
 
   return (
-    <div className="card">
-      <div className="flex justify-between items-start">
-        <div className="flex-1">
-          {editing ? (
-            <textarea
-              className="input"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={4}
-            />
-          ) : (
-            <p className="text-sm text-gray-800 whitespace-pre-wrap">
-              {note.content}
-            </p>
-          )}
+    <div
+      className="card note-card note-row"
+      onClick={() => onOpen(note)}
+      style={{ cursor: "pointer" }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="note-title">{title}</div>
         </div>
-        <div className="flex flex-col items-end ml-3 gap-2">
-          {editing ? (
-            <button className="btn" onClick={handleSave}>
-              <Check size={16} /> Save
-            </button>
-          ) : (
-            <button className="btn" onClick={() => setEditing(true)}>
-              <Edit size={16} /> Edit
-            </button>
-          )}
-          <button className="btn btn-danger" onClick={() => onDelete(note._id)}>
-            <Trash2 size={16} /> Delete
-          </button>
+        <div className="text-xs text-muted" style={{ whiteSpace: "nowrap" }}>
+          {createdBy} • {createdAt}
         </div>
-      </div>
-      <div className="text-xs text-muted mt-2">
-        Updated: {new Date(note.updatedAt || note.createdAt).toLocaleString()}
       </div>
     </div>
   );

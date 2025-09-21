@@ -8,7 +8,7 @@ import notesRoutes from "./routes/notes.js";
 import tenantRoutes from "./routes/tenants.js";
 import debugRoutes from "./routes/debug.js";
 
-dotenv.config({ path: [".env"], override: true });
+dotenv.config();
 
 const app = express();
 app.use(express.json());

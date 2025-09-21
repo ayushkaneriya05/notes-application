@@ -38,7 +38,7 @@ router.post(
   authMiddleware,
   requireRole("ADMIN"),
   async (req, res) => {
-    const { email, role } = req.body || {};
+    const { email, role, name } = req.body || {};
 
     if (!email || !role) {
       return res.status(400).json({ error: "Email and role are required" });
@@ -48,12 +48,13 @@ router.post(
     const hashed = await bcrypt.hash("password", 10);
 
     try {
-      console.log(
-        `invite attempt by ${req.user?.email} for tenant ${
-          tenant?.slug
-        } payload=${JSON.stringify({ email, role })}`
-      );
+      // console.log(
+      //   `invite attempt by ${req.user?.email} for tenant ${
+      //     tenant?.slug
+      //   } payload=${JSON.stringify({ email, role, name })}`
+      // );
       const newUser = await User.create({
+        name: name || undefined,
         email,
         password: hashed,
         role: String(role).toUpperCase() === "ADMIN" ? "ADMIN" : "MEMBER",
@@ -62,7 +63,11 @@ router.post(
 
       res.json({
         message: "User invited",
-        user: { email: newUser.email, role: newUser.role.toLowerCase() },
+        user: {
+          name: newUser.name || newUser.email,
+          email: newUser.email,
+          role: newUser.role.toLowerCase(),
+        },
       });
     } catch (err) {
       console.error("invite error", err);

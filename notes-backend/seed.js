@@ -28,24 +28,28 @@ const seed = async () => {
 
     await User.create([
       {
+        name: "Acme Admin",
         email: "admin@acme.test",
         password: hashedPassword,
         role: "ADMIN",
         tenant: acme._id,
       },
       {
+        name: "Acme User",
         email: "user@acme.test",
         password: hashedPassword,
         role: "MEMBER",
         tenant: acme._id,
       },
       {
+        name: "Globex Admin",
         email: "admin@globex.test",
         password: hashedPassword,
         role: "ADMIN",
         tenant: globex._id,
       },
       {
+        name: "Globex User",
         email: "user@globex.test",
         password: hashedPassword,
         role: "MEMBER",

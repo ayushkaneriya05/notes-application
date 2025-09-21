@@ -18,6 +18,8 @@ export default {
   setToken,
   auth: {
     login: (e, p) => instance.post("/auth/login", { email: e, password: p }),
+    changePassword: (payload) =>
+      instance.post("/auth/change-password", payload),
   },
   notes: {
     list: () => instance.get("/notes"),

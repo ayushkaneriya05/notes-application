@@ -2,9 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-import Tenant from "../models/Tenant.js";
 import { authMiddleware } from "../middleware/auth.js";
-import { requireRole } from "../middleware/role.js";
 
 const router = express.Router();
 
@@ -25,6 +23,7 @@ router.post("/login", async (req, res) => {
     token,
     user: {
       id: user._id,
+      name: user.name,
       email: user.email,
       role: user.role.toLowerCase(), // normalize for frontend
       tenant: {
@@ -34,6 +33,28 @@ router.post("/login", async (req, res) => {
       },
     },
   });
+});
+
+// Change password (authenticated)
+router.post("/change-password", authMiddleware, async (req, res) => {
+  const { currentPassword, newPassword } = req.body || {};
+  if (!currentPassword || !newPassword)
+    return res
+      .status(400)
+      .json({ error: "currentPassword and newPassword are required" });
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    const match = await bcrypt.compare(currentPassword, user.password);
+    if (!match)
+      return res.status(400).json({ error: "Invalid current password" });
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    res.json({ message: "Password changed" });
+  } catch (err) {
+    console.error("change-password error", err);
+    res.status(500).json({ error: "Failed to change password" });
+  }
 });
 
 export default router;

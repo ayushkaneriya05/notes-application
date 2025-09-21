@@ -1,17 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import NotesCard from "../components/NotesCard";
 import InviteModal from "../components/InviteModal";
+import NoteModal from "../components/NoteModal";
+import NoteViewModal from "../components/NoteViewModal";
+import { useToast } from "../context/ToastContext";
 
 export default function NotesPage() {
-  const { user, token, setUser } = useAuth();
+  const navigate = useNavigate();
+  const { user, setUser } = useAuth();
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [noteModalOpen, setNoteModalOpen] = useState(false);
+  const [viewNote, setViewNote] = useState(null);
+  const [editingNote, setEditingNote] = useState(null);
   const [err, setErr] = useState(null);
+
+  const {
+    success: toastSuccess,
+    error: toastError,
+    info: toastInfo,
+  } = useToast();
 
   const fetchNotes = async () => {
     setLoading(true);
@@ -20,7 +33,10 @@ export default function NotesPage() {
       const res = await api.notes.list();
       setNotes(res.data);
     } catch (e) {
-      setErr("Failed to load notes");
+      const msg =
+        e.response?.data?.error || e.message || "Failed to load notes";
+      setErr(msg);
+      toastError(msg);
     }
     setLoading(false);
   };
@@ -29,132 +45,179 @@ export default function NotesPage() {
     fetchNotes();
   }, []);
 
-  const addNote = async () => {
+  const openAdd = () => {
+    setEditingNote(null);
+    if (freeLimitReached) {
+      toastInfo("Note limit reached — upgrade to Pro for unlimited notes");
+      return;
+    }
+    setNoteModalOpen(true);
+  };
+
+  const handleSaveNote = async (payload) => {
     setErr(null);
+    // enforce free tier limit
+    if (!editingNote && freeLimitReached) {
+      const msg = "Note limit reached — upgrade to Pro for unlimited notes";
+      setErr(msg);
+      toastError(msg);
+      return;
+    }
+
     try {
-      const res = await api.notes.create({ title: "Note", content });
-      setNotes((prev) => [res.data, ...prev]);
-      setContent("");
+      if (editingNote) {
+        const res = await api.notes.update(editingNote._id, payload);
+        setNotes((prev) =>
+          prev.map((n) => (n._id === editingNote._id ? res.data : n))
+        );
+        toastSuccess("Note updated");
+      } else {
+        const res = await api.notes.create(payload);
+        setNotes((prev) => [res.data, ...prev]);
+        toastSuccess("Note created");
+      }
+      setNoteModalOpen(false);
+      setEditingNote(null);
     } catch (e) {
       const body = e.response?.data;
-      setErr(body?.error || "Failed to create note");
+      const msg = body?.error || e.message || "Failed to save note";
+      setErr(msg);
+      toastError(msg);
     }
   };
-  const deleteNote = async (id) => {
+
+  const handleDelete = async (id) => {
+    setErr(null);
     try {
       await api.notes.delete(id);
       setNotes((prev) => prev.filter((n) => n._id !== id));
+      setViewNote(null);
+      toastSuccess("Note deleted");
     } catch (e) {
-      alert("Delete failed");
+      const msg = e.response?.data?.error || e.message || "Delete failed";
+      setErr(msg);
+      toastError(msg);
     }
   };
 
-  const updateNote = async (id, payload) => {
+  const handleEdit = (note) => {
+    setEditingNote(note);
+    setNoteModalOpen(true);
+    setViewNote(null);
+  };
+
+  const openView = async (note) => {
+    // fetch fresh note data using api.notes.get but don't change behavior on failure
     try {
-      const res = await api.notes.update(id, payload);
-      setNotes((prev) => prev.map((n) => (n._id === id ? res.data : n)));
+      const res = await api.notes.get(note._id);
+      setViewNote(res.data);
     } catch (e) {
-      alert("Update failed");
+      const msg =
+        e.response?.data?.error || e.message || "Failed to fetch note";
+      toastError(msg);
+      setViewNote(note);
     }
   };
 
-  const handleUpgrade = async () => {
-    if (user?.tenant?.plan === "pro") return alert("Already Pro");
-    try {
-      await api.tenants.upgrade(user.tenant.slug);
-      // update local user tenant plan
-      const updatedUser = { ...user, tenant: { ...user.tenant, plan: "pro" } };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      alert("Upgraded to Pro");
-    } catch (e) {
-      alert("Upgrade failed");
+  const handleUpgrade = () => {
+    // navigate to the dedicated Upgrade page where the user can confirm
+    if (user?.tenant?.plan === "pro") {
+      toastInfo && toastInfo("Already on Pro plan");
+      return;
     }
+    navigate("/upgrade");
   };
 
-  const handleInvite = async (email, role) => {
+  const handleInvite = async (email, role, name) => {
+    setErr(null);
     try {
-      await api.tenants.invite({ email, role }); // no slug now
-      alert("User invited. Default password: password");
+      await api.tenants.invite({ email, role, name }); // include name
       setInviteOpen(false);
+      toastSuccess("User invited");
     } catch (e) {
-      alert("Invite failed: " + (e.response?.data?.error || e.message));
+      const msg = e.response?.data?.error || e.message || "Invite failed";
+      setErr(msg);
+      toastError(msg);
     }
   };
 
   // plan enforcement for create
   const freeLimitReached = user?.tenant?.plan !== "pro" && notes.length >= 3;
+
   return (
     <div>
       <Navbar />
       <div className="container mt-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold">Notes</h2>
-            <div className="text-sm text-muted">
-              {user?.tenant?.name} — {user?.role}
+        <div className="card" style={{ padding: 16, marginBottom: 16 }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold notes-title">Notes</h2>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {user?.role === "admin" && (
-              <>
-                <button
-                  className={`btn ${
-                    user?.tenant?.plan === "pro" ? "btn-ghost" : "btn-primary"
-                  }`}
-                  onClick={handleUpgrade}
-                  disabled={user?.tenant?.plan === "pro"}
-                >
-                  {user?.tenant?.plan === "pro"
-                    ? "Pro Active"
-                    : "Upgrade to Pro"}
-                </button>
-                <button className="btn" onClick={() => setInviteOpen(true)}>
-                  Invite User
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="card mb-6">
-          <div className="flex gap-3">
-            <textarea
-              className="input"
-              placeholder="Write a note..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={2}
-            />
-            <div className="flex flex-col justify-between">
+            <div className="flex items-center gap-3">
               <button
-                className="btn btn-primary"
-                onClick={addNote}
-                disabled={freeLimitReached}
+                aria-label="Add note"
+                title={freeLimitReached ? "Free limit reached" : undefined}
+                className="btn btn-primary btn-spaced-sm"
+                onClick={openAdd}
+                aria-disabled={freeLimitReached}
               >
-                Add
+                Add Note
               </button>
-              {freeLimitReached && (
-                <div className="text-xs text-yellow-700 mt-2">
-                  Free plan limit reached (3). Upgrade to add more.
-                </div>
+              {user?.role === "admin" && (
+                <>
+                  <button
+                    className={`btn ${
+                      user?.tenant?.plan === "pro" ? "btn-ghost" : "btn-primary"
+                    } btn-spaced-sm`}
+                    onClick={handleUpgrade}
+                    disabled={user?.tenant?.plan === "pro"}
+                  >
+                    {user?.tenant?.plan === "pro"
+                      ? "Pro Active"
+                      : "Upgrade to Pro"}
+                  </button>
+                  <button
+                    className="btn btn-spaced-md"
+                    onClick={() => setInviteOpen(true)}
+                  >
+                    Invite User
+                  </button>
+                </>
               )}
             </div>
           </div>
-          {err && <div className="text-sm text-red-600 mt-2">{err}</div>}
         </div>
 
-        <div>
+        <div className="card" style={{ padding: 12 }}>
           {loading ? (
-            <div className="text-muted">Loading...</div>
+            <div className="grid-notes">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="card skeleton-card skeleton" />
+              ))}
+            </div>
+          ) : notes.length === 0 ? (
+            <div className="empty">
+              <h3>No notes yet</h3>
+              <p className="text-muted">
+                Create your first note to get started.
+              </p>
+              <div className="cta">
+                <button
+                  className="btn btn-primary"
+                  onClick={openAdd}
+                  aria-disabled={freeLimitReached}
+                >
+                  Add Note
+                </button>
+              </div>
+            </div>
           ) : (
             <div className="grid-notes">
               {notes.map((n) => (
                 <NotesCard
                   key={n._id}
                   note={n}
-                  onDelete={deleteNote}
-                  onUpdate={updateNote}
+                  onOpen={(note) => openView(note)}
                 />
               ))}
             </div>
@@ -166,6 +229,23 @@ export default function NotesPage() {
         open={inviteOpen}
         onClose={() => setInviteOpen(false)}
         onInvite={handleInvite}
+      />
+      <NoteModal
+        open={noteModalOpen}
+        onClose={() => {
+          setNoteModalOpen(false);
+          setEditingNote(null);
+        }}
+        onSave={handleSaveNote}
+        initial={editingNote}
+      />
+      <NoteViewModal
+        open={!!viewNote}
+        onClose={() => setViewNote(null)}
+        note={viewNote}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        currentUserId={user?.id}
       />
     </div>
   );
