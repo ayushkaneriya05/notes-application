@@ -11,7 +11,7 @@ import { useToast } from "../context/ToastContext";
 
 export default function NotesPage() {
   const navigate = useNavigate();
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -26,7 +26,7 @@ export default function NotesPage() {
     info: toastInfo,
   } = useToast();
 
-  const fetchNotes = async () => {
+  const fetchNotes = React.useCallback(async () => {
     setLoading(true);
     setErr(null);
     try {
@@ -39,11 +39,11 @@ export default function NotesPage() {
       toastError(msg);
     }
     setLoading(false);
-  };
+  }, [toastError]);
 
   useEffect(() => {
     fetchNotes();
-  }, []);
+  }, [fetchNotes]);
 
   const openAdd = () => {
     setEditingNote(null);
