@@ -57,6 +57,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 0;
+    flex-wrap: wrap;
+    gap: 10px;
   }
   .brand {
     display: flex;
@@ -138,8 +140,15 @@
     border-radius: 4px;
   }
   .modal-panel {
+    width: 100%;
+    max-width: 720px;
     min-width: 420px;
     border-radius: 12px;
+  }
+  @media (max-width: 480px) {
+    .modal-panel {
+      min-width: unset;
+    }
   }
 
   /* Buttons */
@@ -505,5 +514,61 @@
   }
   .toast-info {
     background: linear-gradient(90deg, #2563eb, #06b6d4);
+  }
+
+  /* Utilities and responsive helpers */
+  .clickable {
+    cursor: pointer;
+  }
+  .note-row-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .note-row-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .mt-12 {
+    margin-top: 12px;
+  }
+  .mt-16 {
+    margin-top: 16px;
+  }
+  .mb-16 {
+    margin-bottom: 16px;
+  }
+  .card-compact {
+    padding: 12px;
+  }
+  .panel-align-start {
+    align-items: flex-start;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 760px) {
+    .container {
+      padding: 16px;
+    }
+    .user-actions {
+      flex-wrap: wrap;
+    }
+  }
+  @media (max-width: 520px) {
+    .note-row-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .note-meta {
+      white-space: normal;
+    }
+  }
+  @media (max-width: 480px) {
+    .toast-viewport {
+      left: 16px;
+      right: 16px;
+      max-width: none;
+    }
   }
 }

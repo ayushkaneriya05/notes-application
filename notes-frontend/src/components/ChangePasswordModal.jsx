@@ -44,7 +44,7 @@ export default function ChangePasswordModal({ open, onClose }) {
           <div className="text-sm text-muted">Update your account password</div>
         </div>
 
-        <div style={{ marginTop: 12 }}>
+        <div className="mt-12">
           <label className="label">Current password</label>
           <input
             type="password"
@@ -55,7 +55,7 @@ export default function ChangePasswordModal({ open, onClose }) {
           />
         </div>
 
-        <div style={{ marginTop: 12 }}>
+        <div className="mt-12">
           <label className="label">New password</label>
           <input
             type="password"
@@ -66,7 +66,7 @@ export default function ChangePasswordModal({ open, onClose }) {
           />
         </div>
 
-        <div style={{ marginTop: 12 }}>
+        <div className="mt-12">
           <label className="label">Confirm new password</label>
           <input
             type="password"
@@ -77,7 +77,7 @@ export default function ChangePasswordModal({ open, onClose }) {
           />
         </div>
 
-        <div className="panel-actions" style={{ marginTop: 16 }}>
+        <div className="panel-actions mt-16">
           <button className="btn" onClick={onClose} disabled={loading}>
             Cancel
           </button>

@@ -31,7 +31,7 @@ export default function NoteModal({ open, onClose, onSave, initial }) {
           <div className="text-sm text-muted">Keep notes concise and clear</div>
         </div>
 
-        <div style={{ marginTop: 12 }}>
+        <div className="mt-12">
           <label className="label">Title</label>
           <input
             ref={titleRef}
@@ -43,7 +43,7 @@ export default function NoteModal({ open, onClose, onSave, initial }) {
           />
         </div>
 
-        <div style={{ marginTop: 12 }}>
+        <div className="mt-12">
           <label className="label">Content</label>
           <textarea
             className="input"
@@ -55,7 +55,7 @@ export default function NoteModal({ open, onClose, onSave, initial }) {
           />
         </div>
 
-        <div className="panel-actions" style={{ marginTop: 16 }}>
+        <div className="panel-actions mt-16">
           <button className="btn" onClick={onClose}>
             Cancel
           </button>

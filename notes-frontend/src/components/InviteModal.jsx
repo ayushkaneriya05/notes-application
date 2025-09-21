@@ -30,7 +30,7 @@ export default function InviteModal({ open, onClose, onInvite }) {
           </div>
         </div>
 
-        <div style={{ marginTop: 12 }}>
+        <div className="mt-12">
           <label className="label">Full name</label>
           <input
             className="input"
@@ -41,7 +41,7 @@ export default function InviteModal({ open, onClose, onInvite }) {
           />
         </div>
 
-        <div style={{ marginTop: 12 }}>
+        <div className="mt-12">
           <label className="label">Email</label>
           <input
             className="input"
@@ -55,7 +55,7 @@ export default function InviteModal({ open, onClose, onInvite }) {
           )}
         </div>
 
-        <div style={{ marginTop: 12 }}>
+        <div className="mt-12">
           <label className="label">Role</label>
           <select
             className="input"
@@ -67,7 +67,7 @@ export default function InviteModal({ open, onClose, onInvite }) {
           </select>
         </div>
 
-        <div className="panel-actions" style={{ marginTop: 16 }}>
+        <div className="panel-actions mt-16">
           <button className="btn" onClick={onClose}>
             Cancel
           </button>

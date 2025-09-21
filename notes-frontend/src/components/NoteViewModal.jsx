@@ -48,18 +48,15 @@ export default function NoteViewModal({
   })();
   return (
     <div className="modal-backdrop">
-      <div
-        className="card modal-panel"
-        style={{ maxWidth: 720, width: "100%" }}
-      >
-        <div className="panel-header" style={{ alignItems: "flex-start" }}>
+      <div className="card modal-panel">
+        <div className="panel-header panel-align-start">
           <div>
             <h3 className="text-xl font-bold">{note.title || "Untitled"}</h3>
             <div className="text-sm text-muted">
               by {author} • {createdAt}
             </div>
           </div>
-          <div className="panel-actions" style={{ gap: 8 }}>
+          <div className="panel-actions gap-2">
             {isOwner && (
               <button className="btn" onClick={() => onEdit(note)}>
                 Edit

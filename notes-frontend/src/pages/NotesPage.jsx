@@ -148,8 +148,8 @@ export default function NotesPage() {
     <div>
       <Navbar />
       <div className="container mt-6">
-        <div className="card" style={{ padding: 16, marginBottom: 16 }}>
-          <div className="flex items-center justify-between">
+        <div className="card mb-16">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-2xl font-bold notes-title">Notes</h2>
             </div>
@@ -188,7 +188,7 @@ export default function NotesPage() {
           </div>
         </div>
 
-        <div className="card" style={{ padding: 12 }}>
+        <div className="card card-compact">
           {loading ? (
             <div className="grid-notes">
               {Array.from({ length: 6 }).map((_, i) => (

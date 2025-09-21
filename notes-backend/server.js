@@ -33,7 +33,8 @@ const corsOptions = {
     return callback(null, true);
   },
 };
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
 
 // Routes
 app.use("/auth", authRoutes);

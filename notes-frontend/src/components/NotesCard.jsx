@@ -38,22 +38,14 @@ export default function NotesCard({ note, onOpen }) {
 
   return (
     <div
-      className="card note-card note-row"
+      className="card note-card note-row clickable"
       onClick={() => onOpen(note)}
-      style={{ cursor: "pointer" }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-        }}
-      >
-        <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="note-row-content">
+        <div className="note-row-text">
           <div className="note-title">{title}</div>
         </div>
-        <div className="text-xs text-muted" style={{ whiteSpace: "nowrap" }}>
+        <div className="note-meta text-xs">
           {createdBy} • {createdAt}
         </div>
       </div>
