@@ -5,6 +5,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
+  api.setToken(localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("user"));
@@ -35,7 +36,6 @@ export const AuthProvider = ({ children }) => {
     window.location.href = "/login";
   };
 
-  // ensure api has token on init and whenever token changes
   useEffect(() => {
     if (token) api.setToken(token);
     else api.setToken(null);
