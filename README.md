@@ -1,5 +1,14 @@
 # 📝 Notes Application
 
+![Node.js](https://img.shields.io/badge/Node.js-18.x-green?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5.x-black?logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-8.x-47A248?logo=mongodb&logoColor=white)
+![Mongoose](https://img.shields.io/badge/Mongoose-ODM-red?logo=mongoose&logoColor=white)
+![React](https://img.shields.io/badge/React-19.x-61DAFB?logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-7.x-646CFF?logo=vite&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-Auth-blueviolet?logo=jsonwebtokens&logoColor=white)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+
 A **full-stack multi-tenant Notes application** (backend + frontend) built with strict tenant isolation using a **shared-schema approach**.  
 This repository demonstrates **multi-tenancy, authentication & authorization, tenant-scoped routing, and a complete frontend workflow**.
 
@@ -17,10 +26,6 @@ This repository demonstrates **multi-tenancy, authentication & authorization, te
 - [Local Setup](#-local-setup)
 - [API Endpoints Reference](#-api-endpoints-reference)
 - [Security & Hardening](#-security--hardening)
-- [Operational Notes](#-operational-notes)
-- [MCP Integrations](#-mcp-integrations)
-- [Extensions & Next Steps](#-extensions--next-steps)
-- [Changelog](#-changelog)
 - [Contact](#-contact)
 
 ---
@@ -200,56 +205,12 @@ npm run dev
 
 ---
 
-## 🛠 Operational Notes
-
-- **Backups:** Single DB backup → contains all tenants.
-- **Migrations:** Global schema migrations required.
-- **Monitoring:** Use Sentry + logging for errors & performance.
-
----
-
-## 🔗 MCP Integrations
-
-Recommended services:
-
-- **Neon** (serverless Postgres with RLS)
-- **Netlify** (frontend hosting)
-- **Zapier** (automation flows)
-- **Figma** (design → code conversion)
-- **Supabase** (Postgres + auth alternative)
-- **Builder CMS** (content management)
-- **Linear** (issue tracking)
-- **Notion** (documentation sync)
-- **Sentry** (error monitoring)
-- **Semgrep** (security scanning)
-
----
-
-## 🚀 Extensions & Next Steps
-
-1. Add tenant scoping middleware (`notes-backend/middleware/tenantScope.js`).
-2. Implement Mongoose plugin (`models/plugins/tenantPlugin.js`) for auto-filtering.
-3. Improve API client (`frontend/lib/api.js`) → token refresh & retries.
-4. Add E2E tests for cross-tenant isolation.
-
----
-
-## 📝 Changelog
-
-- Expanded README with **multi-tenancy details, schema, auth flow, route scoping, frontend mapping, seed instructions, security, and extensions**.
-
----
-
 ## 📬 Contact
 
-Seeded tenants (`Acme` & `Globex`) are provided for quick validation.
-For improvements (like tenant middleware or plugins), feel free to extend this project.
+Built and maintained by **Ayush Kaneriya**.
+
+- GitHub: [@yourusername](https://github.com/ayushkaneriya05)
+- LinkedIn: [Your LinkedIn](https://linkedin.com/in/ayush-kaneriya)
+- Email: ayushkaneriya05@gmail.com
 
 ---
-
-```
-
----
-
-Would you like me to also **add badges** (e.g., Node.js, React, MongoDB, Vite) and a **preview screenshot** section at the top so the README looks more polished for GitHub?
-```
