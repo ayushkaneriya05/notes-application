@@ -12,7 +12,13 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+const corsOptions = {
+  origin: "https://notes-application-frontend-seven.vercel.app/",
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 // Routes
 app.use("/auth", authRoutes);
