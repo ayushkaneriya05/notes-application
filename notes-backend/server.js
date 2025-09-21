@@ -6,8 +6,9 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import notesRoutes from "./routes/notes.js";
 import tenantRoutes from "./routes/tenants.js";
+import debugRoutes from "./routes/debug.js";
 
-dotenv.config();
+dotenv.config({ path: [".env"], override: true });
 
 const app = express();
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use(cors());
 app.use("/auth", authRoutes);
 app.use("/notes", notesRoutes);
 app.use("/tenants", tenantRoutes);
+app.use("/debug", debugRoutes);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });

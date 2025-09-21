@@ -24,12 +24,16 @@ router.post("/", authMiddleware, async (req, res) => {
     createdBy: req.user._id,
   });
 
-  res.json(note);
+  // return with creator info
+  const created = await Note.findById(note._id).populate("createdBy", "email");
+  res.json(created);
 });
 
 // Read all
 router.get("/", authMiddleware, async (req, res) => {
-  const notes = await Note.find({ tenant: req.user.tenant._id });
+  const notes = await Note.find({ tenant: req.user.tenant._id })
+    .populate("createdBy", "email")
+    .sort({ createdAt: -1 });
   res.json(notes);
 });
 
@@ -38,7 +42,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
   const note = await Note.findOne({
     _id: req.params.id,
     tenant: req.user.tenant._id,
-  });
+  }).populate("createdBy", "email");
   if (!note) return res.status(404).json({ error: "Not found" });
   res.json(note);
 });
@@ -49,7 +53,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
     { _id: req.params.id, tenant: req.user.tenant._id },
     req.body,
     { new: true }
-  );
+  ).populate("createdBy", "email");
   if (!note) return res.status(404).json({ error: "Not found" });
   res.json(note);
 });
