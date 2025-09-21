@@ -14,13 +14,12 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-  origin: "https://notes-application-frontend-seven.vercel.app/",
+  origin: "https://notes-application-frontend-seven.vercel.app",
   optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
 
-// Routes
 app.use("/auth", authRoutes);
 app.use("/notes", notesRoutes);
 app.use("/tenants", tenantRoutes);
@@ -30,11 +29,11 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-// DB + Server
-const PORT = process.env.PORT || 4000;
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
+    console.log("✅ MongoDB connected for Vercel");
   })
   .catch((err) => console.error(err));
+
+export default app;
