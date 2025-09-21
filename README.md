@@ -209,8 +209,8 @@ npm run dev
 
 Built and maintained by **Ayush Kaneriya**.
 
-- GitHub: [@yourusername](https://github.com/ayushkaneriya05)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/ayush-kaneriya)
+- GitHub: [ayushkaneriya05](https://github.com/ayushkaneriya05)
+- LinkedIn: [Ayush Kaneriya](https://linkedin.com/in/ayush-kaneriya)
 - Email: ayushkaneriya05@gmail.com
 
 ---
