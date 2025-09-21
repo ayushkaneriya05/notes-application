@@ -153,7 +153,7 @@ Located in `notes-frontend/src/`:
 
 ---
 
-## ⚙️ Local Setup
+## Local Setup
 
 ### Backend
 
