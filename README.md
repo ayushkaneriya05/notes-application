@@ -22,6 +22,7 @@ This repository demonstrates **multi-tenancy, authentication & authorization, te
 - [Authentication & Authorization](#-authentication--authorization)
 - [Backend Routes](#-backend-routes)
 - [Seeded Tenants & Test Accounts](#-seeded-tenants--test-accounts)
+- [Vercel Deployment](#-vercel-deployment)
 - [Frontend Structure](#-frontend-structure)
 - [Local Setup](#local-setup)
 - [API Endpoints Reference](#-api-endpoints-reference)
@@ -132,6 +133,46 @@ MONGO_URI="your-mongo-uri" JWT_SECRET="a-secret" node seed.js
 - `user@acme.test` → Member (Acme)
 - `admin@globex.test` → Admin (Globex)
 - `user@globex.test` → Member (Globex)
+
+---
+## 🚀 Vercel Deployment
+
+This project is configured for a monorepo deployment on Vercel, with separate projects for the backend and frontend.
+
+### 1. Database Setup (MongoDB Atlas)
+
+- Create a free cluster on **MongoDB Atlas**.
+- In the **Network Access** tab, add `0.0.0.0/0` to the IP Access List.  
+  > This is required to allow Vercel's serverless functions to connect.
+- In the **Database Access** tab, create a database user and save the password.
+- Get your connection string (**Drivers → Node.js**) and replace `<password>` with your user's password.  
+  This is your `MONGO_URI`.
+
+---
+
+### 2. Backend Deployment
+
+- **Create a New Vercel Project**: Import your Git repository.
+- **Configure Project**:
+  - **Project Name**: e.g., `notes-application-backend`
+  - **Root Directory**: `notes-backend`
+- **Environment Variables**:
+  - `MONGO_URI`: The full connection string from MongoDB Atlas.
+  - `JWT_SECRET`: A secure, random string for signing tokens.
+- **Deploy**: Vercel will use the `notes-backend/vercel.json` file to deploy the Express app as a serverless function.  
+  Note the deployed URL (e.g., `https://your-backend.vercel.app`).
+
+---
+
+### 3. Frontend Deployment
+
+- **Create Another Vercel Project**: Import the same Git repository again.
+- **Configure Project**:
+  - **Project Name**: e.g., `notes-application-frontend`
+  - **Root Directory**: `notes-frontend`
+- **Environment Variables**:
+  - `VITE_API_URL`: The URL of your deployed backend from the previous step.
+- **Deploy**: Vercel will use the `notes-frontend/vercel.json` file to correctly handle client-side routing.
 
 ---
 
