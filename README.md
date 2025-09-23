@@ -135,6 +135,7 @@ MONGO_URI="your-mongo-uri" JWT_SECRET="a-secret" node seed.js
 - `user@globex.test` → Member (Globex)
 
 ---
+
 ## 🚀 Vercel Deployment
 
 This project is configured for a monorepo deployment on Vercel, with separate projects for the backend and frontend.
@@ -142,7 +143,7 @@ This project is configured for a monorepo deployment on Vercel, with separate pr
 ### 1. Database Setup (MongoDB Atlas)
 
 - Create a free cluster on **MongoDB Atlas**.
-- In the **Network Access** tab, add `0.0.0.0/0` to the IP Access List.  
+- In the **Network Access** tab, add `0.0.0.0/0` to the IP Access List.
   > This is required to allow Vercel's serverless functions to connect.
 - In the **Database Access** tab, create a database user and save the password.
 - Get your connection string (**Drivers → Node.js**) and replace `<password>` with your user's password.  
