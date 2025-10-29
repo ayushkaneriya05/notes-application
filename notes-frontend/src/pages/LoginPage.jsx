@@ -119,6 +119,9 @@ export default function LoginPage() {
                   <div>admin@globex.test (password: password)</div>
                   <div>user@globex.test (password: password)</div>
                 </div>
+                <div className="mt-3 text-sm">
+                  Don't have an account? <a href="/register">Create one</a>
+                </div>
               </form>
             </div>
           </main>

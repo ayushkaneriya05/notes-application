@@ -41,6 +41,30 @@ export const AuthProvider = ({ children }) => {
     else api.setToken(null);
   }, [token]);
 
+  // If we have a token but no user, fetch /auth/me to hydrate the user
+  useEffect(() => {
+    let mounted = true;
+    const hydrate = async () => {
+      if (!token) return;
+      if (user) return;
+      try {
+        const res = await api.auth.me();
+        if (!mounted) return;
+        setUser(res.data);
+      } catch (e) {
+        console.warn("Failed to fetch /auth/me", e?.message || e);
+        // token likely invalid - clear and redirect to login
+        setToken(null);
+        api.setToken(null);
+        window.location.href = "/login";
+      }
+    };
+    hydrate();
+    return () => {
+      mounted = false;
+    };
+  }, [token]);
+
   return (
     <AuthContext.Provider value={{ token, user, login, logout, setUser }}>
       {children}

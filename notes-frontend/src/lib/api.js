@@ -13,6 +13,23 @@ function setToken(token) {
   else delete instance.defaults.headers.common["Authorization"];
 }
 
+// Response interceptor to handle auth errors globally
+instance.interceptors.response.use(
+  (r) => r,
+  (err) => {
+    if (err?.response?.status === 401) {
+      // Force a full reload to ensure context resets (simpler than trying to reach AuthContext)
+      try {
+        window.location.href = "/login";
+      } catch (e) {
+        /* ignore - server side */
+        console.log(e);
+      }
+    }
+    return Promise.reject(err);
+  }
+);
+
 export default {
   instance,
   setToken,
@@ -20,6 +37,8 @@ export default {
     login: (e, p) => instance.post("/auth/login", { email: e, password: p }),
     changePassword: (payload) =>
       instance.post("/auth/change-password", payload),
+    register: (payload) => instance.post("/auth/register", payload),
+    me: () => instance.get("/auth/me"),
   },
   notes: {
     list: () => instance.get("/notes"),
